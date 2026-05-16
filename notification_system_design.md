@@ -2,7 +2,7 @@
 
 # Stage 1 — REST API Design
 
-## Objective
+Objective
 
 The goal of this stage is to design REST APIs for a campus notification platform.  
 The system is mainly used for sending notifications related to placements, events, exam results, and important campus announcements to students in real time.
