@@ -137,3 +137,211 @@ because:
 - explanations are conversational
 - reasoning is added
 - formatting looks human-made
+
+
+
+
+# Stage 2 — Database Design & Choice
+
+
+---
+
+# Stage 2 — Database Design and Selection
+
+## Objective
+
+In this stage, the goal is to decide which type of database would be more suitable for the campus notification platform and explain the reasoning behind the decision.
+
+The notification system is expected to handle a large number of student notifications continuously, especially during placement seasons, event registrations, and result announcements.
+
+Because of this, the database should support:
+- fast writes
+- efficient reads
+- scalability
+- flexible data storage
+
+---
+
+# Database Choice
+
+For this system, I would prefer using a NoSQL database like MongoDB.
+
+---
+
+# Why MongoDB Was Chosen
+
+There are multiple reasons for selecting MongoDB for the notification platform.
+
+## 1. Flexible Schema
+
+Notification formats can change frequently depending on the notification type.
+
+For example:
+- placement notifications may contain company details
+- event notifications may contain venue information
+- result notifications may contain marks or grades
+
+Since MongoDB supports flexible document structures, schema changes become easier to manage.
+
+---
+
+## 2. Faster Inserts
+
+A notification system usually performs a huge number of insert operations because notifications are continuously generated.
+
+MongoDB handles write-heavy workloads efficiently, which makes it suitable for this use case.
+
+---
+
+## 3. Better Scalability
+
+As the number of students increases, notification traffic can also increase significantly.
+
+MongoDB supports horizontal scaling using sharding, which helps distribute large amounts of data across multiple servers.
+
+This improves system scalability for future growth.
+
+---
+
+## 4. JSON-like Data Storage
+
+Notifications are naturally represented in JSON format.
+
+MongoDB stores data in BSON documents, which is very similar to JSON and works well with Node.js applications.
+
+This makes backend integration simpler.
+
+---
+
+# Notification Collection Schema
+
+A sample notification document is shown below:
+
+```json
+{
+  "_id": "1",
+  "userId": "101",
+  "type": "Placement",
+  "title": "Placement Drive",
+  "message": "TCS placement drive starts tomorrow",
+  "read": false,
+  "timestamp": "2026-05-16T10:00:00Z"
+}
+
+Important Fields
+_id → unique identifier
+userId → student receiving notification
+type → notification category
+title → short heading
+message → actual notification content
+read → indicates read/unread status
+timestamp → stores notification creation time
+
+Possible Future Improvements
+
+In a real production system, additional fields can also be added such as:
+
+notification priority
+expiry time
+delivery status
+email/SMS status
+attachment URLs
+
+This flexibility is another reason why NoSQL databases are useful for notification systems.
+
+
+---
+
+# Stage 3 — Query Optimization and Performance Improvements
+
+## Objective
+
+The campus notification platform can generate a large number of notifications every day, especially during placement drives, result publishing, and event registrations.
+
+Because of this, database queries should be optimized properly so that notifications can be fetched quickly without affecting overall system performance.
+
+This stage focuses on improving query efficiency and reducing unnecessary database load.
+
+---
+
+# Common Query Operations
+
+Some of the most frequently used operations in the notification system are:
+
+- fetching notifications for a student
+- retrieving unread notifications
+- sorting notifications by latest timestamp
+- filtering notifications based on category
+- marking notifications as read
+
+Since these queries will be executed very frequently, optimization becomes important.
+
+---
+
+# Indexing Strategy
+
+Indexes can significantly improve database read performance.
+
+For this notification platform, the following fields should be indexed.
+
+## 1. userId Index
+
+```js id="idx1"
+db.notifications.createIndex({ userId: 1 })
+
+2. timestamp Index
+db.notifications.createIndex({ timestamp: -1 })
+
+Notifications are usually displayed from newest to oldest.
+
+Indexing timestamps improves sorting performance.
+
+3. read Status Index
+db.notifications.createIndex({ read: 1 })
+
+This helps in quickly filtering unread notifications.
+
+Pagination
+
+Instead of loading thousands of notifications at once, pagination should be implemented.
+
+Example:
+
+GET /notifications?page=1&limit=20
+
+Benefits of pagination:
+
+reduces server load
+improves API response time
+avoids unnecessary data transfer
+improves frontend performance
+Limiting Returned Fields
+
+Only required fields should be returned from the database.
+
+For example, if only title and timestamp are needed, there is no need to send the full notification document.
+
+This reduces response size and improves performance.
+
+Caching Frequently Accessed Data
+
+Some notifications may be accessed repeatedly by many users.
+
+In production systems, caching tools like Redis can be used to temporarily store frequently requested notifications.
+
+Benefits of caching:
+
+reduced database traffic
+faster API responses
+improved scalability
+Database Cleanup Strategy
+
+Old notifications should not remain forever inside the database.
+
+A cleanup mechanism can be introduced to remove outdated notifications automatically after a certain period.
+
+This helps:
+
+reduce storage usage
+improve database performance
+maintain cleaner datasets
