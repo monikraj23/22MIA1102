@@ -345,3 +345,161 @@ This helps:
 reduce storage usage
 improve database performance
 maintain cleaner datasets
+
+---
+
+# Stage 4 — System Scaling and Queue-Based Architecture
+
+## Objective
+
+As the number of students increases, the notification platform should be capable of handling a large amount of traffic efficiently.
+
+During situations like:
+- placement season
+- semester result publishing
+- important event announcements
+
+thousands of notifications may be generated at almost the same time.
+
+This stage focuses on designing a scalable architecture capable of handling high notification traffic reliably.
+
+---
+
+# Problem With Direct Notification Processing
+
+If the server tries to send every notification immediately after receiving a request, the system can become overloaded very quickly.
+
+Possible issues include:
+
+- slow API responses
+- server crashes during heavy traffic
+- delayed notifications
+- increased database load
+
+Because of this, asynchronous processing becomes important.
+
+---
+
+# Queue-Based Architecture
+
+To solve scalability problems, a message queue system can be introduced.
+
+Instead of processing notifications instantly, notifications are first pushed into a queue.
+
+Then background workers process them separately.
+
+---
+
+# Architecture Flow
+
+The overall flow would work like this:
+
+1. User or admin creates a notification
+2. API server receives the request
+3. Notification gets added to the message queue
+4. Worker services consume messages from the queue
+5. Notifications are stored and delivered to users
+
+This reduces load on the main API server.
+
+---
+
+# Technologies That Can Be Used
+
+Some commonly used queue technologies are:
+
+- RabbitMQ
+- Apache Kafka
+- Redis Queue (BullMQ)
+
+For this system, Redis + BullMQ can be a simple and efficient choice with Node.js.
+
+---
+
+# Advantages of Queue Processing
+
+## 1. Better Scalability
+
+Queue systems help distribute workload across multiple worker services.
+
+This improves scalability significantly.
+
+---
+
+## 2. Faster API Response
+
+The API does not wait for notification delivery completion.
+
+It only pushes the task into the queue and responds quickly.
+
+This improves user experience.
+
+---
+
+## 3. Improved Reliability
+
+Even if one worker crashes, queued messages are not immediately lost.
+
+They can be retried later.
+
+---
+
+## 4. Background Processing
+
+Heavy operations like:
+- sending emails
+- push notifications
+- SMS delivery
+
+can happen independently without affecting the main server.
+
+---
+
+# Horizontal Scaling
+
+As traffic increases, additional worker servers can be added.
+
+This allows the platform to process notifications in parallel.
+
+Example:
+
+- Worker 1 → placement notifications
+- Worker 2 → event notifications
+- Worker 3 → result notifications
+
+This distributes workload efficiently.
+
+---
+
+# Fault Tolerance
+
+Retry mechanisms can also be implemented.
+
+If notification delivery fails:
+- the job can be retried automatically
+- failure logs can be stored
+- monitoring systems can track failed jobs
+
+This improves overall reliability.
+
+---
+
+# Final Conclusion
+
+A queue-based architecture helps the notification system handle large-scale traffic more efficiently.
+
+Using asynchronous processing improves:
+- scalability
+- reliability
+- response time
+- fault tolerance
+
+This architecture is commonly used in real-world backend systems handling large numbers of notifications.
+``` id="st4end"
+
+---
+
+# SAVE FILE
+
+```txt id="st4save"
+CMD + S
