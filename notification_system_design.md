@@ -497,9 +497,118 @@ Using asynchronous processing improves:
 This architecture is commonly used in real-world backend systems handling large numbers of notifications.
 ``` id="st4end"
 
+
+
 ---
 
-# SAVE FILE
+# Stage 5 — Security and Rate Limiting
 
-```txt id="st4save"
-CMD + S
+## Objective
+
+Since the campus notification platform handles important student-related updates, security becomes an important part of the system.
+
+The platform should be protected from:
+- spam requests
+- unauthorized access
+- server abuse
+- malicious traffic
+
+This stage focuses on improving system security and protecting backend APIs.
+
+---
+
+# Authentication and Authorization
+
+Only authorized users should be allowed to create or manage notifications.
+
+For example:
+
+- admins can create notifications
+- students can only view their own notifications
+
+JWT (JSON Web Tokens) can be used for authentication between the frontend and backend services.
+
+---
+
+# API Protection
+
+Protected APIs should verify tokens before allowing access.
+
+Example protected routes:
+
+```http id="sec1"
+POST /notifications
+PUT /notifications/:id
+DELETE /notifications/:id
+
+Rate Limiting
+
+Rate limiting helps prevent API abuse.
+
+Without rate limiting, a user or attacker could continuously send requests and overload the server.
+
+Example:
+
+limit users to 100 requests per minute
+block excessive repeated requests temporarily
+Express Rate Limiter
+
+In Node.js applications, middleware like express-rate-limit can be used.
+
+Example configuration:
+
+const rateLimit = require("express-rate-limit");
+
+const limiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 100
+});
+
+This limits users to 100 requests every minute.
+
+Input Validation
+
+All incoming request data should be validated properly.
+
+For example:
+
+empty notification messages should not be allowed
+invalid user IDs should be rejected
+missing required fields should return errors
+
+This prevents invalid or harmful data from entering the system.
+
+Logging and Monitoring
+
+The logging middleware implemented earlier is useful for:
+
+tracking API activity
+monitoring errors
+debugging failures
+identifying suspicious requests
+
+Logs help backend developers monitor system health more effectively.
+
+HTTPS Security
+
+In production environments, HTTPS should always be enabled.
+
+Benefits include:
+
+encrypted communication
+secure token transfer
+protection against packet sniffing
+
+Sensitive data should never be transmitted over plain HTTP.
+
+Database Security
+
+Database access should also be restricted properly.
+
+Important practices include:
+
+environment variables for credentials
+restricted database permissions
+regular backups
+avoiding hardcoded secrets
+
