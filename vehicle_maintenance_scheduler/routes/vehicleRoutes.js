@@ -17,19 +17,37 @@ const {
 
 router.get("/vehicles", async (req, res) => {
 
-    const vehicles = getAllVehicles();
+    try {
 
-    await Log(
-        "backend",
-        "info",
-        "route",
-        "Fetched all vehicles"
-    );
+        const vehicles = getAllVehicles();
 
-    res.json({
-        success: true,
-        vehicles: vehicles
-    });
+        await Log(
+            "backend",
+            "info",
+            "route",
+            "Fetched all vehicles"
+        );
+
+        res.status(200).json({
+            success: true,
+            vehicles: vehicles
+        });
+
+    } catch (error) {
+
+        await Log(
+            "backend",
+            "fatal",
+            "route",
+            error.message
+        );
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
 
 });
 
@@ -39,22 +57,62 @@ router.get("/vehicles", async (req, res) => {
 
 router.post("/vehicles", async (req, res) => {
 
-    const newVehicle = req.body;
+    try {
 
-    addVehicle(newVehicle);
+        const newVehicle = req.body;
 
-    await Log(
-        "backend",
-        "info",
-        "controller",
-        "New vehicle added"
-    );
+        // VALIDATION
 
-    res.json({
-        success: true,
-        message: "Vehicle added successfully",
-        vehicle: newVehicle
-    });
+        if (
+            !newVehicle.id ||
+            !newVehicle.vehicleNumber ||
+            !newVehicle.status
+        ) {
+
+            await Log(
+                "backend",
+                "error",
+                "handler",
+                "Vehicle creation failed due to missing fields"
+            );
+
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+
+        }
+
+        addVehicle(newVehicle);
+
+        await Log(
+            "backend",
+            "info",
+            "controller",
+            "New vehicle added successfully"
+        );
+
+        res.status(201).json({
+            success: true,
+            message: "Vehicle added successfully",
+            vehicle: newVehicle
+        });
+
+    } catch (error) {
+
+        await Log(
+            "backend",
+            "fatal",
+            "route",
+            error.message
+        );
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
 
 });
 
@@ -64,23 +122,41 @@ router.post("/vehicles", async (req, res) => {
 
 router.put("/vehicles/:id", async (req, res) => {
 
-    const id = parseInt(req.params.id);
+    try {
 
-    const updatedData = req.body;
+        const id = parseInt(req.params.id);
 
-    updateVehicle(id, updatedData);
+        const updatedData = req.body;
 
-    await Log(
-        "backend",
-        "warn",
-        "service",
-        `Vehicle ${id} updated`
-    );
+        updateVehicle(id, updatedData);
 
-    res.json({
-        success: true,
-        message: "Vehicle updated successfully"
-    });
+        await Log(
+            "backend",
+            "warn",
+            "service",
+            `Vehicle ${id} updated`
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Vehicle updated successfully"
+        });
+
+    } catch (error) {
+
+        await Log(
+            "backend",
+            "fatal",
+            "route",
+            error.message
+        );
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
 
 });
 
@@ -90,21 +166,39 @@ router.put("/vehicles/:id", async (req, res) => {
 
 router.delete("/vehicles/:id", async (req, res) => {
 
-    const id = parseInt(req.params.id);
+    try {
 
-    deleteVehicle(id);
+        const id = parseInt(req.params.id);
 
-    await Log(
-        "backend",
-        "error",
-        "handler",
-        `Vehicle ${id} deleted`
-    );
+        deleteVehicle(id);
 
-    res.json({
-        success: true,
-        message: "Vehicle deleted successfully"
-    });
+        await Log(
+            "backend",
+            "error",
+            "handler",
+            `Vehicle ${id} deleted`
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Vehicle deleted successfully"
+        });
+
+    } catch (error) {
+
+        await Log(
+            "backend",
+            "fatal",
+            "route",
+            error.message
+        );
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
 
 });
 
